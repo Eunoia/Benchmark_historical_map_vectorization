@@ -29,13 +29,7 @@ Results are made reproducible and reusable thanks to public data, code and resul
 
 ## Usage 
 
-- **Download** 
-
-The dataset can be downloaded through [Zenodo]()
-The pretrained weight can be downloaded through [Zenodo]()
-
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6519817.svg)](https://zenodo.org/record/6519817#.Yq30V3VBzRL) -->
-
+- **Download**
 Download the dataset and put it into the folder [Dataset](./dataset/)
 
 - **Data loading** 
@@ -130,6 +124,7 @@ python test_mws.py --cuda --gpu <gpu> --model_type <model type> -d <dyanmic valu
 cd inferencing/
 python test_mws.py --cuda --unseen --gpu <gpu> --model_type <model type> -d <dyanmic value> -a <area value> --model <best model weight .pth file> --original_image <original_image_path>
 ```
+<<<<<<< HEAD
 
 ## Benchmark table
 
@@ -195,5 +190,4 @@ If you use this repository your work, please cite our [paper](path-to-the-paper-
 - This work was supported by ANR project SoDUCo ANR-18-CE38-0013.
 - The source of the map [Historical_map_resource]().
 - We thank Zenodo for hosting the dataset.
-
 
