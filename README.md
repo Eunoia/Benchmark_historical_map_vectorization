@@ -1,6 +1,6 @@
 ---
 title: Benchmark Historical Map Vectorization
-emoji: 🐨
+emoji: 📜
 colorFrom: indigo
 colorTo: pink
 sdk: docker
@@ -9,3 +9,5 @@ license: gpl-3.0
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
+# Benchmark_historical_map_vectorization
