@@ -30,7 +30,7 @@ from model.unet import UNET
 from model.hed import hed
 from model.bdcn import bdcn
 from model.segmenter.factory import create_segmenter
-from model.pvt import pvt_2
+# from model.pvt import pvt_2
 from model.dws import watershed_net_combine
 from model.mosin import mosin, VGGNet
 
@@ -48,7 +48,7 @@ def test(model, win_size, args):
 
     # args.unseen == True -> gt is None
     test_img  = Data(input, gt, win_size, unseen=args.unseen)
-    testloader = torch.utils.data.DataLoader(test_img, batch_size=40, shuffle=False, num_workers=0, pin_memory=True)
+    testloader = torch.utils.data.DataLoader(test_img, batch_size=1, shuffle=False, num_workers=0, pin_memory=False)
 
     if args.cuda:
         model.to(args.device)
@@ -73,7 +73,7 @@ def test(model, win_size, args):
                 out = torch.argmax(out, 0)
                 fuse = (out == 0).type(torch.uint8).cpu().numpy()
             else:
-                out = model(images)
+                out = model(images.to('cpu'))
                 fuse = torch.sigmoid(out).cpu().numpy()
 
         if i == 0:
@@ -90,14 +90,17 @@ def meyer_watershed(image_path, dynamic, area, output_path, out_visu_path):
 def main():
     args = parse_args()
 
+    print("seeding")
     torch.manual_seed(args.seed)
 
     # Choose the GPUs
-    args.device = torch.device("cuda:0".format(str(args.gpu)) if torch.cuda.is_available() else "cpu")
+    print("torch device")
+    args.device = torch.device("cpu") #"cuda:0".format(str(args.gpu)) if torch.cuda.is_available() else "cpu")
 
     if args.model_type == 'unet' or args.model_type == 'bal' or args.model_type == 'topo' or args.model_type == 'pathloss' or args.model_type == 'unet_bri' or args.model_type == 'unet_aff' or args.model_type == 'unet_hom' or args.model_type == 'unet_tps' or args.model_type == 'unet_bri_aff' or args.model_type == 'unet_bri_hom' or args.model_type == 'unet_bri_tps':
+        print('here')
         model = UNET(n_channels=args.channels, n_classes=args.classes)
-        model.load_state_dict(torch.load('%s' % (args.model)))
+        model.load_state_dict(torch.load(args.model, map_location=torch.device('cpu')))
         print('Load model {}'.format(args.model))
         win_size = 500
         patches_images_ws = test(model, win_size, args)
@@ -155,7 +158,7 @@ def main():
     output_dir = os.path.join(str(Path(args.model).parent), name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
+    print("after loading")
     # Reconstruct image
     tile_save_image_path = os.path.join(output_dir, '{}_test.png'.format(str(args.model_type)))
     in_img = cv2.imread(args.input_map_path)
@@ -193,6 +196,7 @@ def di(lines, i):
     return lines[lines[..., 2] == i, :2]
 
 def sal_2_polygon(img_path, save_vector):
+    print("sal_2_polygon: "+img_path)
     img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
     binary = img
     binary_image = ((binary == 0)).astype(np.uint8)
