@@ -1,10 +1,10 @@
-project(histmap)
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
+project(histmap LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+find_package(pylene REQUIRED CONFIG)
 
-add_executable(histmapseg
-  src/main.cpp)
-target_link_libraries(histmapseg PRIVATE CONAN_PKG::pylene)
+add_executable(histmapseg src/main.cpp)
+target_link_libraries(histmapseg PRIVATE pylene::pylene)

@@ -24,7 +24,7 @@ WORKDIR /app
 # Clone your repo (or COPY . if you push code into the Space repo)
 # If you already vendored the repo contents into the Space, replace with: COPY . /app
 # RUN git clone --depth=1 https://github.com/soduco/Benchmark_historical_map_vectorization.git src
-RUN wget https://github.com/soduco/Benchmark_historical_map_vectorization/archive/refs/heads/main.zip
+RUN wget https://github.com/eunoia/Benchmark_historical_map_vectorization/archive/refs/heads/main.zip
 RUN unzip main.zip
 RUN mv Benchmark_historical_map_vectorization-main src
 WORKDIR /app/src/watershed/histmapseg
@@ -41,19 +41,6 @@ RUN conan remote add lrde-public https://artifactory.lre.epita.fr/artifactory/ap
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
 
-RUN cat > /app/src/watershed/histmapseg/CMakeLists.txt <<'CMAKE'
-cmake_minimum_required(VERSION 3.20)
-project(histmap LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-find_package(pylene REQUIRED CONFIG)
-
-add_executable(histmapseg src/main.cpp)
-target_link_libraries(histmapseg PRIVATE pylene::pylene)
-CMAKE
-
 RUN conan install .. -of build -b missing \
   -g CMakeDeps -g CMakeToolchain -g VirtualRunEnv \
   -s compiler=gcc -s compiler.version=12 -s compiler.libcxx=libstdc++11 -s compiler.cppstd=20 \
@@ -66,14 +53,13 @@ RUN cmake --build build -j"$(nproc)"
 RUN cp build/histmapseg /usr/local/bin/histmapseg
 
 # # ---- Python deps for the UNet inference wrapper ----
-# WORKDIR /app/src
+WORKDIR /app/src
 # COPY requirements.txt /app/req.txt
-# RUN pip install --no-cache-dir -r /app/req.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # App entry (Gradio/CLI). If you use Gradio UI:
 # COPY app.py /app/app.py
 
 # Expose Gradio default port for Spaces
-# ENV PORT=7860
-# CMD ["python","/app/app.py"]
-CMD ["ls"]
+ENV PORT=7860
+CMD ["python","app.py"]
