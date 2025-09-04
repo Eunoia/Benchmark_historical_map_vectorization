@@ -24,10 +24,11 @@ WORKDIR /app
 # Clone your repo (or COPY . if you push code into the Space repo)
 # If you already vendored the repo contents into the Space, replace with: COPY . /app
 # RUN git clone --depth=1 https://github.com/soduco/Benchmark_historical_map_vectorization.git src
-RUN wget https://github.com/eunoia/Benchmark_historical_map_vectorization/archive/refs/heads/main.zip
-RUN unzip main.zip
-RUN mv Benchmark_historical_map_vectorization-main src
-WORKDIR /app/src/watershed/histmapseg
+WORKDIR /app
+COPY . /app
+
+WORKDIR /app/watershed/histmapseg
+
 
 # ---- Build the C++ watershed/histmapseg ----
 # If this subproject uses Conan + CMake (typical):
@@ -53,7 +54,7 @@ RUN cmake --build build -j"$(nproc)"
 RUN cp build/histmapseg /usr/local/bin/histmapseg
 
 # # ---- Python deps for the UNet inference wrapper ----
-WORKDIR /app/src
+WORKDIR /app
 # COPY requirements.txt /app/req.txt
 RUN wget https://github.com/soduco/Benchmark_historical_map_vectorization/releases/download/pretrain/unet_best_weight.pth
 RUN mv unet_best_weight.pth models
@@ -64,4 +65,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose Gradio default port for Spaces
 ENV PORT=7860
-CMD ["python","app.py"]
+CMD ["python","/app/src/app.py"]

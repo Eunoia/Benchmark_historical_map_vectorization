@@ -146,4 +146,8 @@ with gr.Blocks(title="Historical Map Vectorization") as demo:
             examples_per_page=10
         )
 
-demo.queue(api_open=False).launch()
+if __name__ == "__main__":
+    demo.queue(api_open=False).launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 7860)),
+    )
