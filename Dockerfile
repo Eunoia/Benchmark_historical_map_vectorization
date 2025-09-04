@@ -47,7 +47,7 @@ RUN conan install .. -of build -b missing \
   -c tools.cmake.cmaketoolchain:generator=Ninja \
   -c tools.build:compiler_executables='{"c":"/usr/bin/gcc","cpp":"/usr/bin/g++"}'
 
-RUN  cmake -S .. -B build -G Ninja   -DCMAKE_TOOLCHAIN_FILE="$PWD/build/conan_toolchain.cmake"   -DCMAKE_PREFIX_PATH="$PWD/build"   -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
+RUN cmake -S .. -B build -G Ninja   -DCMAKE_TOOLCHAIN_FILE="$PWD/build/conan_toolchain.cmake"   -DCMAKE_PREFIX_PATH="$PWD/build"   -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
 RUN cmake --build build -j"$(nproc)"
 
 RUN cp build/histmapseg /usr/local/bin/histmapseg
@@ -55,6 +55,8 @@ RUN cp build/histmapseg /usr/local/bin/histmapseg
 # # ---- Python deps for the UNet inference wrapper ----
 WORKDIR /app/src
 # COPY requirements.txt /app/req.txt
+RUN wget https://github.com/soduco/Benchmark_historical_map_vectorization/releases/download/pretrain/unet_best_weight.pth
+RUN mv unet_best_weight.pth models
 RUN pip install --no-cache-dir -r requirements.txt
 
 # App entry (Gradio/CLI). If you use Gradio UI:
