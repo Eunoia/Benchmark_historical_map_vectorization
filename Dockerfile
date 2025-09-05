@@ -65,4 +65,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose Gradio default port for Spaces
 ENV PORT=7860
-CMD ["python","/app/src/app.py"]
+CMD ["python","/app/app.py"]
